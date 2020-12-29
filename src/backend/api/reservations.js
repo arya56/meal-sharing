@@ -33,8 +33,6 @@ router.get('/:id', async (req, res) => {
 
 // Put Endpoint
 // Updates the reservation by id
-//  update created_date by id not works   also in post part
-
 
 router.put('/:id', async (req, res) => {
   try {
@@ -61,7 +59,9 @@ router.delete('/:id', async (req, res) => {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const checkIdExist = await knex('Reservation').select('').where('id', '=', id);
+        const checkIdExist = await knex('Reservation')
+          .select('')
+          .where('id', '=', id);
         if (checkIdExist.length != 0) {
           await knex('Reservation').where('id', '=', id).del();
           const ReservationsAfterDel = await knex('Reservation');
@@ -80,9 +80,6 @@ router.delete('/:id', async (req, res) => {
 
 // Post Endpoint
 // Insert a new Reservation thought BODY X-WWW-form-urlencoded
-
-
-//  inset created_date by id not works  
 
 router.post('/', async (req, res) => {
   try {
