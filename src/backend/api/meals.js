@@ -10,6 +10,7 @@ function mealsQueryBuilder(query) {
       q = knex
         .select(
           'Meal.title',
+          'Meal.id',
           knex.raw('max_reservations - number_of_guest as ??', [
             'Available_reservation',
           ])
@@ -43,11 +44,7 @@ function mealsQueryBuilder(query) {
     }
     if (query.hasOwnProperty('title')) {
       const title = query.title;
-      const mealWithTitle =  knex('Meal').where(
-        'title',
-        'like',
-        `%${title}%`
-      );
+      const mealWithTitle = knex('Meal').where('title', 'like', `%${title}%`);
       q = mealWithTitle;
     }
     if (query.hasOwnProperty('limit')) {
@@ -55,7 +52,7 @@ function mealsQueryBuilder(query) {
       if (isNaN(limit)) {
         errorTitle = 'limit';
       } else {
-        const mealsLimit =  knex('Meal').select('*');
+        const mealsLimit = knex('Meal').select('*');
         if (limit > mealsLimit.length) {
           limit = mealsLimit.length;
         }
@@ -83,6 +80,17 @@ function mealsQueryBuilder(query) {
 // rest of the Get endpoint
 // & all base of the query parameters on api/meals
 //****************************************************** */
+
+// router.get("/", async (request, response) => {
+//   try {
+//     // knex syntax for selecting things. Look up the documentation for knex for further info
+//     const titles = await knex("Meal").select("title");
+//     response.json(titles);
+//   } catch (error) {
+//     throw error;
+//   }
+// });
+
 router.get('/', async (req, res) => {
   try {
     if (
@@ -192,5 +200,22 @@ router.post('/', async (req, res) => {
     throw error;
   }
 });
+
+// router.post("/", async (request, response) => {
+//   try {
+//     console.log(request.body);
+//     const meal = await knex("Meal").insert({
+//       "title":request.body.title,
+//       "location": "cph",
+//       "max_reservations" : 4,
+//       "price": 30,
+//       "description": "basjhbjh",
+//       // "created_date": "2020-10-16"
+//   });
+//     response.json(meal)
+//   } catch (error) {
+//     throw error;
+//   }
+// });
 
 module.exports = router;
