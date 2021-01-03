@@ -5,6 +5,7 @@ export function MealById() {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorForMessage, setErrorForMessage] = useState('');
   const [idFound, setIdFound] = useState(false);
+  const [maxAvailable, setMaxAvailable] = useState(false);
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,30 +19,7 @@ export function MealById() {
     (async () => {
       try {
         const result = await fetch(
-          `http://localhost:3000/api/meals?availableReservations=true`
-        );
-        if (result.status !== 200) {
-          throw new Error('fail to connect to the Api');
-        }
-        const availableList = await result.json();
-        console.log(' result', result);
-        console.log('avail', availableList);
-        setSearchId(prev => availableList.map(list => list.id));
-        console.log('searchId', searchId);
-        if (searchId.includes(parseInt(id))) {
-          setIdFound(prev => true);
-        }
-      } catch (error) {
-        setErrorForMessage(prev => error.message);
-      }
-    })();
-  }, [idFound]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const result = await fetch(
-          `http://localhost:5000/api/meals/${parseInt(id)}`
+          `api/meals/${parseInt(id)}`
         );
         if (result.status !== 200) {
           throw new Error('fail to connect to the Api');
@@ -63,6 +41,72 @@ export function MealById() {
         setErrorMessage(prev => error.message);
       }
     })();
+    // (async () => {
+    //   try {
+    //     const [result1,result2] = Promise.all([
+    //         fetch(`http://localhost:3000/api/meals?availableReservations=true`),
+    //         fetch( `http://localhost:5000/api/meals/${parseInt(id)}`),
+    //     ])
+
+    //     if (result1.status !== 200 || result2.status !== 200) {
+
+    //       throw new Error('fail to connect to the Api');
+    //     }
+    //     const availableList = await result1.json();
+    //     console.log(' result', result1);
+    //     console.log('avail', availableList);
+    //     setSearchId(prev => availableList.map(list => list.id));
+    //     console.log('searchId', searchId);
+    //     if (searchId.includes(parseInt(id))) {
+    //       setIdFound(prev => true);
+    //     }
+    //
+    // const mealsList = await result2.json();
+    // console.log(mealsList);
+    // setMealById(prev =>
+    //   mealsList.map(meal => ({
+    //     title: meal.title,
+    //     description: meal.description,
+    //     id: meal.id,
+    //     max_reservations: meal.max_reservations,
+    //     price: meal.price,
+    //   }))
+    // );
+    // console.log('mealo', mealById);
+    //   } catch (error) {
+    //     setErrorForMessage(prev => error.message);
+    //   }
+    // })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await fetch(
+          `api/meals?availableReservations=true`
+        );
+        if (result.status !== 200) {
+          throw new Error('fail to connect to the Api');
+        }
+        const availableList = await result.json();
+        console.log(' result', result);
+        console.log('avail', availableList);
+        setSearchId(prev =>
+          availableList.map(list => ({
+            id: list.id,
+            max_reservations: list.Available_reservation,
+          }))
+        );
+        console.log('searchId', searchId);
+        if (searchId.includes(parseInt(id))) {
+          setIdFound(prev => true);
+        } else {
+          setMaxAvailable = prev => true;
+        }
+      } catch (error) {
+        setErrorForMessage(prev => error.message);
+      }
+    })();
   }, []);
 
   console.log('idFound', idFound);
@@ -71,7 +115,8 @@ export function MealById() {
       {item.title} : {item.description}
       <br />
       Price : {item.price} <br />
-      Available : {item.max_reservations}
+      Available : {maxAvailable} ? {item.max_reservations} :{' '}
+      {mealById.max_reservations}
     </div>
   ));
   //   console.log('into MealById', mealById);
@@ -87,7 +132,7 @@ export function MealById() {
       <br />
       <br />
       <br />
-      {idFound && (
+      {founded && (
         <form>
           Reservation form
           <br />

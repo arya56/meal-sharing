@@ -17,7 +17,6 @@ function App() {
           <h1>Meal application</h1>
           <Home></Home>
         </Route>
-       
         <Route exact path="/lol">
           <p>lol</p>
         </Route>
@@ -28,16 +27,16 @@ function App() {
           <TestComponent></TestComponent>
         </Route>
       </Router>
-       <Route exact path="/meals">
-          <h1>Meals</h1>
-          <Meals></Meals>
-          {/* <CreateMeal></CreateMeal> */}
-         </Route>  
-        <Route exact path="/meals/:id">
-          <h1>Meal application</h1>
-          <MealById></MealById>
-        </Route>
-        
+      <Route exact path="/meals">
+        <h1>Meals</h1>
+        <Meals></Meals>
+        {/* <CreateMeal></CreateMeal> */}
+      </Route>
+      <Route exact path="/meals/:id">
+        <h1>Meal application</h1>
+        <MealById></MealById>
+      </Route>
+
       <Footer />
     </div>
   );

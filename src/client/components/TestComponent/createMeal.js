@@ -6,7 +6,7 @@ const[title,setTitle] = useState('');
 
 const onSubmit =()=>{
     (async () => {
-        await fetch('http://localhost:5000/api/meals',{
+        await fetch('api/meals',{
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

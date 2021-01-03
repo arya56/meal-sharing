@@ -11,9 +11,15 @@ function mealsQueryBuilder(query) {
         .select(
           'Meal.title',
           'Meal.id',
+          // .column(knex.raw('ifnull(v1.total, 0) as upvotes, ifnull(v2.total, 0) as downvotes'));
+
           knex.raw('max_reservations - number_of_guest as ??', [
-            'Available_reservation',
+            'Available_reservation'
           ])
+          //2  knex.raw('ifnull((max_reservations - number_of_guest),max_reservations) as ??',
+          // ['Available_reservation'])
+          //3   knex.raw('ifnull(??,max_reservations) as ??',
+          //  ['max_reservations - number_of_guest','Available_reservation'])
         )
         .from('Meal')
         .join(
@@ -25,13 +31,14 @@ function mealsQueryBuilder(query) {
             .groupBy('meal_id')
             .as('guestNumber'),
           'id',
+          '=',
           'guestNumber.meal_id'
         );
-      q = q.whereRaw(
-        `max_reservations - number_of_guest ${
-          JSON.parse(query.availableReservations) ? '>' : '<='
-        } 0`
-      );
+      // q = q.whereRaw(
+      //   `max_reservations - number_of_guest ${
+      //     JSON.parse(query.availableReservations) ? '>' : '<='
+      //   } 0`
+      // );
     }
     if (query.hasOwnProperty('maxPrice')) {
       const maxPrice = parseInt(query.maxPrice);

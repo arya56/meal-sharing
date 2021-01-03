@@ -6,7 +6,7 @@ export function Home() {
   useEffect(() => {
     (async () => {
       try {
-        const result = await fetch(`http://localhost:5000/api/meals`);
+        const result = await fetch(`api/meals`);
         console.log('yes');
         if (result.status !== 200) {
           console.log(result.status);
@@ -31,8 +31,8 @@ export function Home() {
   const meals1 = meals.map((item, index) => (
     <div key={index}>
       {item.title.toUpperCase()} : {item.description} , id :{' '}
-      <a href="#"
-      onClick={()=>handler(item.id)}>{item.id}</a>
+      <a href={'api/meals/'+item.id}
+      >{item.id}</a>
       <hr />
     </div>
   ));

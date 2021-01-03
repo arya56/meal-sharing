@@ -6,7 +6,8 @@ export function Meals() {
    useEffect(() => {
     (async () => {
       try {
-        const result = await fetch(`http://localhost:5000/api/meals`);
+        //   http
+        const result = await fetch(`api/meals`);
         if (result.status !== 200) {
           console.log(result.status);
           throw new Error('fail to connect to the Api');
