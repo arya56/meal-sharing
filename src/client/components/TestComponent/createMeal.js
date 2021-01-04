@@ -18,7 +18,7 @@ const onSubmit =()=>{
 // router.post("/", async (request, response) => {
 //   try {
 //     console.log(request.body);
-//     const meal = await knex("Meal").insert({
+//     const meal = await knex("meal").insert({
 //       "title":request.body.title,
 //       "location": "cph",
 //       "max_reservations" : 4,

@@ -44,8 +44,8 @@ export function MealById() {
     // (async () => {
     //   try {
     //     const [result1,result2] = Promise.all([
-    //         fetch(`http://localhost:3000/api/meals?availableReservations=true`),
-    //         fetch( `http://localhost:5000/api/meals/${parseInt(id)}`),
+    //         fetch(`api/meals?availableReservations=true`),
+    //         fetch( `api/meals/${parseInt(id)}`),
     //     ])
 
     //     if (result1.status !== 200 || result2.status !== 200) {

@@ -6,7 +6,7 @@ const knex = require('../database');
 
 router.get('/', async (req, res) => {
   try {
-    const reservations = await knex('Reservation').select('*');
+    const reservations = await knex('reservations').select('*');
     res.json(reservations);
   } catch (error) {
     throw error;
@@ -20,7 +20,7 @@ router.get('/:id', async (req, res) => {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const reservationsById = await knex('Reservation').where('id', id);
+        const reservationsById = await knex('reservations').where('id', id);
         res.json(reservationsById);
       } else {
         res.status(400).send('id is not integer');
@@ -39,7 +39,7 @@ router.put('/:id', async (req, res) => {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const updatedReservation = await knex('Reservation')
+        const updatedReservation = await knex('reservations')
           .where('id', '=', id)
           .update(req.body);
         res.json(updatedReservation);
@@ -59,12 +59,12 @@ router.delete('/:id', async (req, res) => {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const checkIdExist = await knex('Reservation')
+        const checkIdExist = await knex('reservations')
           .select('')
           .where('id', '=', id);
         if (checkIdExist.length != 0) {
-          await knex('Reservation').where('id', '=', id).del();
-          const ReservationsAfterDel = await knex('Reservation');
+          await knex('reservations').where('id', '=', id).del();
+          const ReservationsAfterDel = await knex('reservations');
           res.json(ReservationsAfterDel);
         } else {
           res.status(400).send('id is not exist in Database');
@@ -84,7 +84,7 @@ router.delete('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     req.body.created_date = new Date();
-    const newReservation = await knex('Reservation').insert(req.body);
+    const newReservation = await knex('reservations').insert(req.body);
     res.json(newReservation);
   } catch (error) {
     throw error;

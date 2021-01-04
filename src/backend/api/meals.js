@@ -9,21 +9,21 @@ function mealsQueryBuilder(query) {
     if (query.hasOwnProperty('availableReservations')) {
       q = knex
         .select(
-          'Meal.title',
-          'Meal.id',
+          'meals.title',
+          'meals.id',
           // .column(knex.raw('ifnull(v1.total, 0) as upvotes, ifnull(v2.total, 0) as downvotes'));
 
           knex.raw('max_reservations - number_of_guest as ??', [
-            'Available_reservation'
+            'Available_reservation',
           ])
           //2  knex.raw('ifnull((max_reservations - number_of_guest),max_reservations) as ??',
           // ['Available_reservation'])
           //3   knex.raw('ifnull(??,max_reservations) as ??',
           //  ['max_reservations - number_of_guest','Available_reservation'])
         )
-        .from('Meal')
+        .from('meals')
         .join(
-          knex('Reservation')
+          knex('reservations')
             .select(
               'meal_id',
               knex.raw('sum(number_of_guests) as ??', ['number_of_guest'])
@@ -45,13 +45,13 @@ function mealsQueryBuilder(query) {
       if (isNaN(maxPrice)) {
         errorTitle = 'maxPrice';
       } else {
-        const cheapMeals = knex('Meal').where('price', '<', maxPrice);
+        const cheapMeals = knex('meals').where('price', '<', maxPrice);
         q = cheapMeals;
       }
     }
     if (query.hasOwnProperty('title')) {
       const title = query.title;
-      const mealWithTitle = knex('Meal').where('title', 'like', `%${title}%`);
+      const mealWithTitle = knex('meals').where('title', 'like', `%${title}%`);
       q = mealWithTitle;
     }
     if (query.hasOwnProperty('limit')) {
@@ -59,7 +59,7 @@ function mealsQueryBuilder(query) {
       if (isNaN(limit)) {
         errorTitle = 'limit';
       } else {
-        const mealsLimit = knex('Meal').select('*');
+        const mealsLimit = knex('meals').select('*');
         if (limit > mealsLimit.length) {
           limit = mealsLimit.length;
         }
@@ -69,7 +69,7 @@ function mealsQueryBuilder(query) {
     if (query.hasOwnProperty('createdAfter')) {
       if (/^\d\d\d\d\-\d\d\-\d\d$/.test(query.createdAfter)) {
         const createdAfter = Date.parse(query.createdAfter);
-        const mealsCreatedAfter = knex('Meal').where(
+        const mealsCreatedAfter = knex('meals').where(
           'created_date',
           '>',
           query.createdAfter
@@ -91,7 +91,7 @@ function mealsQueryBuilder(query) {
 // router.get("/", async (request, response) => {
 //   try {
 //     // knex syntax for selecting things. Look up the documentation for knex for further info
-//     const titles = await knex("Meal").select("title");
+//     const titles = await knex("meals").select("title");
 //     response.json(titles);
 //   } catch (error) {
 //     throw error;
@@ -118,7 +118,7 @@ router.get('/', async (req, res) => {
     }
     //  if the query is not added
     else if (Object.keys(req.query).length === 0) {
-      const meals = await knex('Meal').select('');
+      const meals = await knex('meals').select('');
       res.json(meals);
     } else {
       // if there is some undefined query
@@ -129,14 +129,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 	Returns a Meal by id
+// 	Returns a meal by id
 
 router.get('/:id', async (req, res) => {
   try {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const mealsById = await knex('Meal').where('id', id);
+        const mealsById = await knex('meals').where('id', id);
         res.json(mealsById);
       } else {
         res.status(400).send('id is not integer');
@@ -155,7 +155,7 @@ router.put('/:id', async (req, res) => {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const updatedMeals = await knex('Meal')
+        const updatedMeals = await knex('meals')
           .where('id', '=', id)
           .update(req.body);
         res.json(updatedMeals);
@@ -176,10 +176,12 @@ router.delete('/:id', async (req, res) => {
     if (req.params.id) {
       const id = parseInt(req.params.id);
       if (!isNaN(id)) {
-        const checkIdExist = await knex('Meal').select('').where('id', '=', id);
+        const checkIdExist = await knex('meals')
+          .select('')
+          .where('id', '=', id);
         if (checkIdExist.length != 0) {
-          await knex('Meal').where('id', '=', id).del();
-          const mealsAfterDel = await knex('Meal');
+          await knex('meals').where('id', '=', id).del();
+          const mealsAfterDel = await knex('meals');
           res.json(mealsAfterDel);
         } else {
           res.status(400).send('id is not exist in Database');
@@ -201,7 +203,7 @@ router.delete('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     req.body.created_date = new Date();
-    const newMeal = await knex('Meal').insert(req.body);
+    const newMeal = await knex('meals').insert(req.body);
     res.json(newMeal);
   } catch (error) {
     throw error;
@@ -211,7 +213,7 @@ router.post('/', async (req, res) => {
 // router.post("/", async (request, response) => {
 //   try {
 //     console.log(request.body);
-//     const meal = await knex("Meal").insert({
+//     const meal = await knex("meals").insert({
 //       "title":request.body.title,
 //       "location": "cph",
 //       "max_reservations" : 4,
